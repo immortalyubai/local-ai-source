@@ -1,0 +1,21 @@
+{
+  "name": "local-ai-source",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node src/server.mjs",
+    "start": "node src/server.mjs",
+    "deploy:mac": "node scripts/deploy-mac.mjs",
+    "install:mac": "node scripts/install-mac-launch-agent.mjs",
+    "uninstall:mac": "node scripts/install-mac-launch-agent.mjs --uninstall",
+    "install:mac-daily": "node scripts/install-mac-daily-push.mjs",
+    "uninstall:mac-daily": "node scripts/install-mac-daily-push.mjs --uninstall",
+    "digest": "node scripts/preview-digest.mjs",
+    "sources": "node scripts/source-report.mjs",
+    "push:feishu": "node scripts/push-feishu.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

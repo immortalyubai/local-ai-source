@@ -1,0 +1,93 @@
+#!/usr/bin/env node
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const root = path.resolve(__dirname, "..");
+const label = "com.local-ai-source.daily-push";
+const launchAgentsDir = path.join(os.homedir(), "Library", "LaunchAgents");
+const plistPath = path.join(launchAgentsDir, `${label}.plist`);
+const logsDir = path.join(root, "logs");
+const uid = typeof process.getuid === "function" ? process.getuid() : Number(spawnSync("id", ["-u"], { encoding: "utf8" }).stdout.trim());
+const nodePath = process.execPath;
+
+function run(command, args) {
+  const result = spawnSync(command, args, { encoding: "utf8" });
+  return {
+    ok: result.status === 0,
+    stdout: result.stdout?.trim(),
+    stderr: result.stderr?.trim()
+  };
+}
+
+function xmlEscape(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+function plist() {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>${label}</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>${xmlEscape(nodePath)}</string>
+    <string>${xmlEscape(path.join(root, "scripts", "push-feishu.mjs"))}</string>
+    <string>--hours=24</string>
+    <string>--take=12</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>${xmlEscape(root)}</string>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>8</integer>
+    <key>Minute</key>
+    <integer>30</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>${xmlEscape(path.join(logsDir, "daily-push.log"))}</string>
+  <key>StandardErrorPath</key>
+  <string>${xmlEscape(path.join(logsDir, "daily-push.err.log"))}</string>
+</dict>
+</plist>
+`;
+}
+
+function unloadIfNeeded() {
+  run("launchctl", ["bootout", `gui/${uid}/${label}`]);
+  run("launchctl", ["bootout", `gui/${uid}`, plistPath]);
+}
+
+function uninstall() {
+  unloadIfNeeded();
+  if (fs.existsSync(plistPath)) fs.rmSync(plistPath);
+  console.log(`Removed ${plistPath}`);
+}
+
+function install() {
+  fs.mkdirSync(launchAgentsDir, { recursive: true });
+  fs.mkdirSync(logsDir, { recursive: true });
+  fs.writeFileSync(plistPath, plist(), "utf8");
+  unloadIfNeeded();
+  const loaded = run("launchctl", ["bootstrap", `gui/${uid}`, plistPath]);
+  if (!loaded.ok) {
+    console.error(loaded.stderr || loaded.stdout || "launchctl bootstrap failed");
+    process.exit(1);
+  }
+  console.log(`Installed ${label}`);
+  console.log("Daily push time: 08:30 Asia/Shanghai");
+  console.log(`Logs: ${path.join(logsDir, "daily-push.log")}`);
+}
+
+if (process.argv.includes("--uninstall")) uninstall();
+else install();
