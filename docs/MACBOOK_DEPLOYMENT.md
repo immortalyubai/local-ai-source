@@ -60,8 +60,8 @@ open -e ~/local-ai-source/.env
 内容类似：
 
 ```bash
-FEISHU_WEBHOOK_URL=https://open.feishu.cn/open-apis/bot/v2/hook/...
-FEISHU_BOT_SECRET=如果启用了签名就填
+FEISHU_WEBHOOK_URL=<your-feishu-webhook-url>
+FEISHU_BOT_SECRET=<your-feishu-signing-secret>
 ```
 
 测试：

@@ -46,8 +46,8 @@ npm run push:feishu -- --daily
 在飞书里创建一个只给自己看的群，添加“自定义机器人”，复制 webhook 到 `.env`：
 
 ```bash
-FEISHU_WEBHOOK_URL=https://open.feishu.cn/open-apis/bot/v2/hook/...
-FEISHU_BOT_SECRET=如果启用了签名就填
+FEISHU_WEBHOOK_URL=<your-feishu-webhook-url>
+FEISHU_BOT_SECRET=<your-feishu-signing-secret>
 ```
 
 如果机器人启用了“关键词安全策略”，记得把关键词设为 `AI` 或 `日报`，因为推送正文里会包含这些词。
