@@ -2,10 +2,12 @@
 
 Local AI Source 是一个可本地部署的 AI 信息源中转站。它默认接入 AIHOT 公开 API / RSS，把 AI 动态整理成本地网页、RSS、Markdown 日报，并可推送到飞书群或个人群。
 
-这个项目适合做两件事：
+它适合下面几类使用场景：
 
 - 私有接收：在自己的电脑、Mac mini、NAS 或 VPS 上运行，每天把 AI 信息推到手机。
-- 展示与二次开发：作为一个轻量级 AI 信息源 dashboard，展示公开 API 接入、筛选、摘要和自动推送流程。
+- 本地看板：把 AIHOT 的公开信息流整理成一个可筛选、可搜索、可订阅的网页。
+- 二次开发：作为一个轻量级 AI 信息源 dashboard，展示公开 API 接入、筛选、摘要和自动推送流程。
+- 再分发：通过本地 API / RSS / 飞书机器人，把同一份信息源接入自己的自动化工作流。
 
 > 本项目不是 AIHOT 官方项目，也不包含 AIHOT 后台源码、内部信源库或内部 prompt。它只使用公开可访问的 API / RSS，并在本地做二次展示和分发。
 
@@ -21,7 +23,7 @@ Local AI Source 是一个可本地部署的 AI 信息源中转站。它默认接
 ## 快速开始
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/immortalyubai/local-ai-source.git
 cd local-ai-source
 cp .env.example .env
 npm run dev
